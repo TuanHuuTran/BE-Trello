@@ -1,0 +1,13 @@
+{
+  "name": "trello-api",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "trello api",
+  "main": "src/server",
+  "author": "tuan",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
