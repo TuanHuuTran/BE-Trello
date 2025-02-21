@@ -1,14 +1,9 @@
-
-const MONGODB_URI = 'mongodb+srv://tuantran:bizRzcwbwH8vRrcK@cluster0.c4hd9.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
-const DATABASE_NAME = 'trello-web'
-
 import { MongoClient, ServerApiVersion } from 'mongodb'
-
-
+import { env } from '~/config/environment'
 // Khởi tạo một đối tượng mongoClientInstance ban đầu là null (vì chúng ta chưa connect)
 let trelloDatabaseInstance = null
 
-const mongoClientInstance = new MongoClient(MONGODB_URI, {
+const mongoClientInstance = new MongoClient(env.MONGODB_URI, {
   serverApi: {
     version: ServerApiVersion.v1,
     strict: true,
@@ -20,14 +15,12 @@ const mongoClientInstance = new MongoClient(MONGODB_URI, {
 export const CONNECT_DB = async () => {
   // Gọi kết nối tới MongoDB Atlas với URI đã khai báo trong thân của mongoClientInstance
   await mongoClientInstance.connect()
-
   // Kết nối thành công thì lấy ra database theo tên và gán ngược nó lại vào biến trelloDatabaseInstance ở trên của chúng ta
-  trelloDatabaseInstance = mongoClientInstance.db(DATABASE_NAME)
+  trelloDatabaseInstance = mongoClientInstance.db(env.DATABASE_NAME)
 }
 
-// Đóng kết nối với mongoDB 
+// Đóng kết nối với mongoDB
 export const CLOSE_DB = async () => {
-  console.log('code chay vao close')
   await mongoClientInstance.close()
 }
 
