@@ -3,6 +3,7 @@ import { StatusCodes } from 'http-status-codes'
 import { boardModel } from '~/models/boardModel'
 import ApiError from '~/utils/ApiError'
 import { slugify } from '~/utils/formatters'
+import { cloneDeep } from 'lodash'
 const newCreate = async (reqBody) => {
   try {
     const newBoard = {
@@ -24,7 +25,15 @@ const getDetails = async (boardId) => {
     if (!board) {
       throw new ApiError(StatusCodes.NOT_FOUND, 'Board not found!')
     }
-    return board
+    const resBoard = cloneDeep(board)
+    resBoard.columns.forEach(column => {
+      // Cách dùng .equals này là bởi vì chúng ta hiểu ObjectId trong mongoDB có support method .equals
+      column.cards = resBoard.cards.filter(card => card.columnId.equals(column._id))
+      // Cách khác là dùng convert ObjectId sang String bằng function toString rồi compare
+      //column.cards = resBoard.cards.filter(card => card.columnId.toString() === column._id.toString())
+    })
+    delete resBoard.cards
+    return resBoard
   } catch (error) {
     throw new Error(error)
   }
