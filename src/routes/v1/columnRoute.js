@@ -1,5 +1,4 @@
 import express from 'express'
-import { StatusCodes } from 'http-status-codes'
 import { columnController } from '~/controllers/columnController'
 import { columnValidation } from '~/validations/columnValidation'
 
@@ -10,4 +9,7 @@ Router.route('/')
   .get()
   .post(columnValidation.createNew, columnController.newCreate )
 
+Router.route('/:id')
+  .get()
+  .put(columnValidation.update, columnController.updateColumn )
 export const columnRoute = Router
