@@ -18,6 +18,7 @@ const getDetails = async ( req, res, next) => {
   } catch (error) {next(error)}
 }
 
+
 export const cardController = {
   newCreate,
   getDetails

@@ -12,4 +12,5 @@ Router.route('/')
 Router.route('/:id')
   .get()
   .put(columnValidation.update, columnController.updateColumn )
+  .delete(columnValidation.deleteColumn, columnController.deleteColumn)
 export const columnRoute = Router
