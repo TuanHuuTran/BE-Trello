@@ -78,12 +78,18 @@ const pushColumnOrderIds = async (column) => {
 }
 
 const updateBoard = async (boardId, updateData) => {
-  Object.keys(updateData).forEach(fieldName => {
-    if ( INVALID_UPDATE_FIELDS.includes(fieldName)) {
-      delete updateData[fieldName]
-    }
-  })
   try {
+    Object.keys(updateData).forEach(fieldName => {
+      if ( INVALID_UPDATE_FIELDS.includes(fieldName)) {
+        delete updateData[fieldName]
+      }
+    })
+    // Đối với những dữ liệu liên quan đến ObjectId thì nên biến đổi cho chuẩn dữ liệu.
+
+    if (updateData) {
+      updateData.columnOrderIds = updateData.columnOrderIds.map(_id => (new ObjectId(_id)))
+    }
+
     const result = await GET_DB().collection(BOARD_COLLECTION_NAME).findOneAndUpdate(
       { _id: new ObjectId(boardId) },
       { $set: updateData },

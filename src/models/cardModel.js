@@ -6,6 +6,8 @@ import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators'
 const validateBeforeCreate = async (data) => {
   return await CARD_COLLECTION_SCHEMA.validateAsync(data, { abortEarly: false })
 }
+const INVALID_UPDATE_FIELDS = ['_id', 'boardId', 'createdAt']
+
 // Define Collection (name & schema)
 const CARD_COLLECTION_NAME = 'cards'
 const CARD_COLLECTION_SCHEMA = Joi.object({
@@ -42,9 +44,28 @@ const findOneById =async (id) => {
 }
 
 
+const updateCard = async (cardId, updateData) => {
+  Object.keys(updateData).forEach(fieldName => {
+    if ( INVALID_UPDATE_FIELDS.includes(fieldName)) {
+      delete updateData[fieldName]
+    }
+  })
+  // Đối với những dữ liệu liên quan đến ObjectId thì nên biến đổi cho chuẩn dữ liệu.
+  if ( updateData.columnId) updateData.columnId = new ObjectId(updateData.columnId)
+  try {
+    const result = await GET_DB().collection(CARD_COLLECTION_NAME).findOneAndUpdate(
+      { _id: new ObjectId(cardId) },
+      { $set: updateData },
+      { returnDocument: 'after' }
+    )
+    return result
+  } catch (error) { throw new Error(error)}
+}
+
 export const cardModel = {
   CARD_COLLECTION_NAME,
   CARD_COLLECTION_SCHEMA,
   createCard,
-  findOneById
+  findOneById,
+  updateCard
 }
