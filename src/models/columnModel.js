@@ -57,12 +57,18 @@ const pushCardOrderIds = async (card) => {
 
 
 const updateColumn = async (columnId, updateData) => {
-  Object.keys(updateData).forEach(fieldName => {
-    if ( INVALID_UPDATE_FIELDS.includes(fieldName)) {
-      delete updateData[fieldName]
-    }
-  })
   try {
+    Object.keys(updateData).forEach(fieldName => {
+      if ( INVALID_UPDATE_FIELDS.includes(fieldName)) {
+        delete updateData[fieldName]
+      }
+    })
+
+    // Đối với những dữ liệu liên quan đến ObjectId thì nên biến đổi cho chuẩn dữ liệu.
+    if (updateData) {
+      updateData.cardOrderIds = updateData.cardOrderIds.map(_id => (new ObjectId(_id)))
+    }
+
     const result = await GET_DB().collection(COLUMN_COLLECTION_NAME).findOneAndUpdate(
       { _id: new ObjectId(columnId) },
       { $set: updateData },
