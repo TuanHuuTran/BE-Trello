@@ -44,7 +44,7 @@ const update = async (req, res, next) => {
 
   try {
     // set abortEarly: false to return many errors
-    //cho phép các thuộc tính không được định nghĩa trong schema (correctCondition) 
+    //cho phép các thuộc tính không được định nghĩa trong schema (correctCondition)
     // tồn tại trong request body mà không báo lỗi.
     await correctCondition.validateAsync(req.body, {
       abortEarly: false,
