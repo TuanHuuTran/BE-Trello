@@ -20,16 +20,19 @@ const START_SERVER = () => {
   // Use APIs V1
   app.use('/v1', APIs_V1)
 
-
   // Middleware centralized error handling
   // Where have next(error) will return centralized error
   app.use(errorHandlingMiddleware)
 
-
-  app.listen(env.APP_PORT, env.APP_HOST, () => {
-    console.log(`Running server at ${ env.APP_HOST }:${ env.APP_PORT }/`)
-  })
-
+  if ( env.BUILD_MODE === 'production') {
+    app.listen(process.env.PORT, () => {
+      console.log(`Running server at ${ env.APP_HOST }:${ env.APP_PORT }/`)
+    })
+  } else {
+    app.listen(env.APP_PORT, env.APP_HOST, () => {
+      console.log(`Running server at ${ env.APP_HOST }:${ env.APP_PORT }/`)
+    })
+  }
   // Thực hiện các tác vụ cleanup trước khi dừng server
   exitHook( () => {
     console.log('Server is shutting down...')
@@ -59,4 +62,4 @@ const START_SERVER = () => {
 //   .catch(error => {
 //     console.error(error)
 //     process.exit(0)
-//   })
+//
