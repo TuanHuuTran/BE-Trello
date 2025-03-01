@@ -8,6 +8,7 @@ import { WEBSITE_DOMAIN } from '~/utils/constants'
 import { BrevoProvider } from '~/providers/BrevoProvider'
 import { JWTProvider } from '~/providers/JWTProvider'
 import { env } from '~/config/environment'
+import { CloudinaryProvider } from '~/providers/CloudinaryProvider'
 
 const newCreate = async (reqBody) => {
   try {
@@ -134,7 +135,7 @@ const refreshToken = async (clientRefreshToken) => {
   } catch (error) {throw error}
 }
 
-const update = async (userId, reqBody) => {
+const update = async (userId, reqBody, userAvatarFile) => {
   try {
     // Query User
     const existUser = await userModel.findOneById(userId)
@@ -154,6 +155,14 @@ const update = async (userId, reqBody) => {
       // Neu nhu current_password dung thi hash mot password vaf update lai
       updatedUser = await userModel.update(existUser._id, {
         password: bcryptjs.hashSync(reqBody.new_password, 8)
+      } )
+    } else if ( userAvatarFile) {
+      // truong upload file cloud storage, cloudinary
+      const uploadResult = await CloudinaryProvider.streamUpload(userAvatarFile.buffer, 'users' )
+
+      // Luu lai URL(secure_url) cua avatar moi upload vao database
+      updatedUser = await userModel.update(existUser._id, {
+        avatar: uploadResult.secure_url
       } )
     } else {
       // truong hop update cac thong tin chung
