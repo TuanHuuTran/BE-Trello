@@ -6,6 +6,7 @@ import { slugify } from '~/utils/formatters'
 import { cloneDeep } from 'lodash'
 import { columnModel } from '~/models/columnModel'
 import { cardModel } from '~/models/cardModel'
+import { DEFAULT_PAGE, DEFAULT_ITEM_PER_PAGE } from '~/utils/constants'
 const newCreate = async (reqBody) => {
   try {
     const newBoard = {
@@ -80,9 +81,25 @@ const moveCardToDifferentColumn = async (reqData) => {
     throw new Error(error)
   }
 }
+
+const getBoards = async (userId, page, itemsPerPage) => {
+  try {
+    // Neu khong ton tai gia tri page va itemsPerPage tu phia FE thi phai gan gia tri mac dinh
+    if (!page) page = DEFAULT_PAGE
+    if (!itemsPerPage) itemsPerPage = DEFAULT_ITEM_PER_PAGE
+
+    const result = await boardModel.getBoards(userId, parseInt(page, 10), parseInt(itemsPerPage, 10))
+
+    return result
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
 export const boardService = {
   newCreate,
   getDetails,
   updateBoard,
-  moveCardToDifferentColumn
+  moveCardToDifferentColumn,
+  getBoards
 }
