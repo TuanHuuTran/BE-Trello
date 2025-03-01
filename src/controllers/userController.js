@@ -54,7 +54,7 @@ const logout = async ( req, res, next ) => {
     // clear cookie
     res.clearCookie('accessToken')
     res.clearCookie('refreshToken')
-    res.status(StatusCodes.OK).json({loggedOut: true})
+    res.status(StatusCodes.OK).json({ loggedOut: true })
   } catch (error) {
     next(error)
   }
@@ -70,10 +70,21 @@ const refreshToken = async ( req, res, next ) => {
   }
 }
 
+const update = async ( req, res, next ) => {
+  try {
+    const userId = req.jwtDecoded._id
+    const updateUser = await userService.update(userId, req.body)
+    res.status(StatusCodes.CREATED).json(updateUser)
+  } catch (error) {
+    next(error)
+  }
+}
+
 export const userController = {
   newCreate,
   verifyAccount,
   login,
   logout,
-  refreshToken
+  refreshToken,
+  update
 }
