@@ -65,7 +65,7 @@ const updateColumn = async (columnId, updateData) => {
     })
 
     // Đối với những dữ liệu liên quan đến ObjectId thì nên biến đổi cho chuẩn dữ liệu.
-    if (updateData) {
+    if (updateData.cardOrderIds) {
       updateData.cardOrderIds = updateData.cardOrderIds.map(_id => (new ObjectId(_id)))
     }
 
