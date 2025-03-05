@@ -1,6 +1,7 @@
 /* eslint-disable no-useless-catch */
 import { cardModel } from '~/models/cardModel'
 import { columnModel } from '~/models/columnModel'
+import { CloudinaryProvider } from '~/providers/CloudinaryProvider'
 const newCreate = async (reqBody) => {
   try {
     const newCard = {
@@ -18,14 +19,22 @@ const newCreate = async (reqBody) => {
   }
 }
 
-const update = async (cardId, reqBody) => {
+const update = async (cardId, reqBody, cardCoveFile) => {
   try {
     const updateData = {
       ...reqBody,
       updatedAt: Date.now()
     }
-    const updateCard = await cardModel.update(cardId, updateData)
-    return updateCard
+
+    let updatedCard = {}
+    if (cardCoveFile) {
+      const uploadResult = await CloudinaryProvider.streamUpload(cardCoveFile.buffer, 'card-covers' )
+      updatedCard = await cardModel.update(cardId, { cover: uploadResult.secure_url } )
+    } else {
+      updatedCard = await cardModel.update(cardId, updateData)
+    }
+
+    return updatedCard
   } catch (error) {
     throw error
   }
