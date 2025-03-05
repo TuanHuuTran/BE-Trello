@@ -92,5 +92,5 @@ export const cardModel = {
   createCard,
   findOneById,
   update,
-  deleteManyByColumnId,
+  deleteManyByColumnId
 }
