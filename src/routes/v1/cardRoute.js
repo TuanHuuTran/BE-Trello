@@ -8,13 +8,9 @@ import { cardValidation } from '~/validations/cardValidation'
 const Router = express.Router()
 
 Router.route('/')
-  .get((req, res) => {
-    res.status(StatusCodes.OK).json({ message: 'API get lists column' })
-  })
-  .post(
-    authMiddleware.isAuthorized,
-    cardValidation.createNew,
-    cardController.newCreate
-  )
+  .post(authMiddleware.isAuthorized, cardValidation.createNew, cardController.newCreate)
+
+Router.route('/:id')
+  .put(authMiddleware.isAuthorized, cardValidation.update, cardController.update)
 
 export const cardRoute = Router
