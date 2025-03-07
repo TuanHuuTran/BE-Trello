@@ -36,6 +36,7 @@ const getDetails = async (userId, boardId) => {
       //column.cards = resBoard.cards.filter(card => card.columnId.toString() === column._id.toString())
     })
     delete resBoard.cards
+
     return resBoard
   } catch (error) {
     throw new Error(error)
