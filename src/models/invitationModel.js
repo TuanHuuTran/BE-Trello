@@ -114,7 +114,7 @@ const findByUser = async (userId) => {
         from: boardModel.BOARD_COLLECTION_NAME,
         localField: 'boardInvitation.boardId',
         foreignField: '_id',
-        as: 'board',
+        as: 'board'
       } }
     ]).toArray()
     return results

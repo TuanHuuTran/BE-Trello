@@ -74,7 +74,44 @@ const getInvitations = async (userId) => {
   } catch (error) { throw error}
 }
 
+const updateBoardInvitation = async (userId, invitationId, status) => {
+  try {
+    const getInvitation = await invitationModel.findOneById(invitationId)
+    if (!getInvitation) throw new ApiError(StatusCodes.NOT_FOUND, 'Invitation not found!')
+
+    // Sau khi Invitation thi lay full thong tin cua board
+    const boardId = getInvitation.boardInvitation.boardId
+    const getBoard = await boardModel.findOneById(boardId)
+    if (!getBoard) throw new ApiError(StatusCodes.NOT_FOUND, 'Board not found!')
+
+    // Kiem tra xem neu status la ACCEPTED join board ma cai thang user (invitee) da la owner hoac member cua board thi thong bao loi
+    // 2 mang memberIds vaf ownerIds cua board dang la kieu ObjectId nen cho no ve string het luo de check
+    const boardOwnerAndMemberIds = [...getBoard.ownerIds, getBoard.memberIds].toString()
+    if (status === BOARD_INVITATION_STATUS.ACCEPTED && boardOwnerAndMemberIds.includes(userId) ) {
+      throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'You are already a member of this board!')
+    }
+
+    // Tao du li update ban ghi Invitation
+    const updateData = {
+      boardInvitation: {
+        ...getInvitation.boardInvitation,
+        status: status
+      }
+    }
+
+    // B1: Cap nhat status trong ban ghi Invitation
+    const updatedInvitation = await invitationModel.update(invitationId, updateData)
+    // B2: Neu truong hop ACCEPT mot loi moi thi phai update them userId cua User vao trong truong memberIds trong board 
+    if (updatedInvitation.boardInvitation.status === BOARD_INVITATION_STATUS.ACCEPTED) {
+      await boardModel.pushMemberIds(boardId, userId)
+    }
+
+    return updatedInvitation
+  } catch (error) { throw error}
+}
+
 export const invitationService = {
   createNewBoardInvitation,
-  getInvitations
+  getInvitations,
+  updateBoardInvitation
 }

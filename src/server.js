@@ -8,7 +8,10 @@ import { env } from '~/config/environment'
 import { APIs_V1 } from '~/routes/v1'
 import { errorHandlingMiddleware } from './middlewares/errorHandlingMiddleware'
 import cookieParser from 'cookie-parser'
-
+// Socket io
+import socketIo from 'socket.io'
+import http from 'http'
+import { inviteUserToBoardSocket } from '~/sockets/inviteUserToBoardSocket'
 const START_SERVER = () => {
   const app = express()
 
@@ -34,12 +37,22 @@ const START_SERVER = () => {
   // Where have next(error) will return centralized error
   app.use(errorHandlingMiddleware)
 
+  // Create new Server boc thang app cua express de lam real-time voi socket.io
+  const server = http.createServer(app)
+  // Khoi tao bien io voi server va cors
+  const io = socketIo(server, { cors: corsOptions })
+  io.on('connection', (socket) => {
+    //Gọi Các socket tùy theo tính năng ở đây.
+    inviteUserToBoardSocket(socket)
+  })
+
   if ( env.BUILD_MODE === 'production') {
-    app.listen(process.env.PORT, () => {
+    // Dung server.listen thay vi dung app.listen vi luc nay server da bao gom express app va da config socket.io
+    server.listen(process.env.PORT, () => {
       console.log(`Running server at ${ env.APP_HOST }:${ env.APP_PORT }/`)
     })
   } else {
-    app.listen(env.APP_PORT, env.APP_HOST, () => {
+    server.listen(env.APP_PORT, env.APP_HOST, () => {
       console.log(`Running server at ${ env.APP_HOST }:${ env.APP_PORT }/`)
     })
   }
