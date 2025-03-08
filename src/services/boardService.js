@@ -83,13 +83,13 @@ const moveCardToDifferentColumn = async (reqData) => {
   }
 }
 
-const getBoards = async (userId, page, itemsPerPage) => {
+const getBoards = async (userId, page, itemsPerPage, queryFilters) => {
   try {
     // Neu khong ton tai gia tri page va itemsPerPage tu phia FE thi phai gan gia tri mac dinh
     if (!page) page = DEFAULT_PAGE
     if (!itemsPerPage) itemsPerPage = DEFAULT_ITEM_PER_PAGE
 
-    const result = await boardModel.getBoards(userId, parseInt(page, 10), parseInt(itemsPerPage, 10))
+    const result = await boardModel.getBoards(userId, parseInt(page, 10), parseInt(itemsPerPage, 10), queryFilters)
 
     return result
   } catch (error) {
